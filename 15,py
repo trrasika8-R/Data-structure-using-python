@@ -1,0 +1,149 @@
+from collections import deque
+
+
+accounts = {
+    1001: {"name": "Rasika", "pin": "1234", "balance": 10000},
+    1002: {"name": "Priya", "pin": "2345", "balance": 8000}
+}
+
+
+transaction_queue = deque()
+
+transaction_stack = []
+
+
+def create_account():
+    acc_no = int(input("Enter Account Number: "))
+
+    if acc_no in accounts:
+        print("Account already exists!")
+        return
+
+    name = input("Enter Name: ")
+    pin = input("Set 4-digit PIN: ")
+    balance = float(input("Enter Initial Balance: "))
+
+    accounts[acc_no] = {
+        "name": name,
+        "pin": pin,
+        "balance": balance
+    }
+
+    print("Account created successfully!")
+
+
+def deposit(acc_no):
+    amount = float(input("Enter Deposit Amount: "))
+
+    if amount <= 0:
+        print("Invalid amount!")
+        return
+
+    accounts[acc_no]["balance"] += amount
+
+    transaction = f"Deposited Rs.{amount}"
+    transaction_stack.append(transaction)
+
+    print("Amount deposited successfully!")
+
+
+def withdraw(acc_no):
+    amount = float(input("Enter Withdrawal Amount: "))
+
+    if amount <= 0:
+        print("Invalid amount!")
+    elif amount > accounts[acc_no]["balance"]:
+        print("Insufficient balance!")
+    else:
+        accounts[acc_no]["balance"] -= amount
+
+        transaction = f"Withdrawn Rs.{amount}"
+        transaction_stack.append(transaction)
+
+        print("Please collect your cash.")
+
+
+def check_balance(acc_no):
+    print("Current Balance: Rs.",
+          accounts[acc_no]["balance"])
+
+
+def transaction_history():
+    if not transaction_stack:
+        print("No transactions available.")
+    else:
+        print("\nTransaction History:")
+
+        for transaction in reversed(transaction_stack):
+            print(transaction)
+
+
+def atm():
+    acc_no = int(input("Enter Account Number: "))
+
+    if acc_no not in accounts:
+        print("Account not found!")
+        return
+
+    pin = input("Enter PIN: ")
+
+    if pin != accounts[acc_no]["pin"]:
+        print("Incorrect PIN!")
+        return
+
+    print("\nLogin Successful!")
+    print("Welcome", accounts[acc_no]["name"])
+
+    while True:
+        print("\n----- ATM MENU -----")
+        print("1. Deposit")
+        print("2. Withdraw")
+        print("3. Check Balance")
+        print("4. Transaction History")
+        print("5. Logout")
+
+        choice = int(input("Enter your choice: "))
+
+        if choice == 1:
+            transaction_queue.append("Deposit Request")
+            deposit(acc_no)
+
+        elif choice == 2:
+            transaction_queue.append("Withdrawal Request")
+            withdraw(acc_no)
+
+        elif choice == 3:
+            check_balance(acc_no)
+
+        elif choice == 4:
+            transaction_history()
+
+        elif choice == 5:
+            print("Logged out successfully!")
+            break
+
+        else:
+            print("Invalid choice!")
+
+
+while True:
+    print("\n===== ATM & BANK ACCOUNT MANAGEMENT SYSTEM =====")
+    print("1. Create Account")
+    print("2. ATM Login")
+    print("3. Exit")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        create_account()
+
+    elif choice == 2:
+        atm()
+
+    elif choice == 3:
+        print("Thank you!")
+        break
+
+    else:
+        print("Invalid choice!")
+
